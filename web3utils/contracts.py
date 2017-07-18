@@ -44,27 +44,18 @@ class ContractSugar:
     Note that this will *not* prevent you from calling a method that tries to alter state.
     That state change will just never be sent to the rest of the network.
 
-    You can modify a call in two ways:
+    You can modify a call like so:
 
     ```
-    # more pythonic, but longer -- the preferred style
-    contract.withdraw.transact({from: eth.accounts[1]}).withargs(web3.toWei(1, 'ether'))
-    # short-hand
-    contract.withdraw.transact({from: eth.accounts[1]})(web3.toWei(1, 'ether'))
+    contract.withdraw(amount, transact={'from': eth.accounts[1], 'gas': 100000, ...})
     ```
 
-    All the modifier functions work just as if you had called it using the web3.py style, eg:
+    Which is equivalent to this web3.py approach:
 
 
     ```
-    contract.transact({from: eth.accounts[1]}).withdraw(web3.toWei(1, 'ether'))
+    contract.transact({'from': eth.accounts[1], 'gas': 100000, ...}).withdraw(amount)
     ```
-
-    Note that modified calls are actually *longer* than the core web3.py (or in short-hand, uglier).
-
-    If you are mostly using transactions, or heavily modified calls, you're probably best off using
-    contracts without the sugar (the original web3.py style). But if you're using a read-heavy
-    pattern, and it is not caller dependent, then this sugar can be much more convenient.
     """
 
     def __init__(self, contract):
@@ -88,45 +79,32 @@ class ContractMethod:
     def __init__(self, contract, function):
         self.__contract = contract
         self.__function = function
-        self.__prepared_call = PreparedContractMethod(contract.call(), function)
-
-    def __call__(self, *args):
-        return self.__prepared_call.withargs(*args)
-
-    def __getattr__(self, attr):
-        return ContractCallModifier(attr, self.__contract, self.__function)
-
-
-class ContractCallModifier:
-
-    def __init__(self, modifier, contract, function):
-        self.__bound_modifier = getattr(contract, modifier)
-        self.__function = function
 
     def __call__(self, *args, **kwargs):
-        modified = self.__bound_modifier(*args, **kwargs)
-        return PreparedContractMethod(modified, self.__function)
-
-
-class PreparedContractMethod:
-
-    def __init__(self, prepared_contract, function):
-        self.__prepared_function = getattr(prepared_contract, function)
-
-    def withargs(self, *args):
+        contract_function = self.__prepared_function(**kwargs)
         args = map(self.__tobytes, args)
-        result = self.__prepared_function(*args)
+        result = contract_function(*args)
         if is_empty_hex(result):
             return None
         else:
             return result
 
-    __call__ = withargs
+    def __prepared_function(self, **kwargs):
+        if not kwargs:
+            modifier = 'call'
+            modifier_dict = {}
+        elif len(kwargs) == 1:
+            modifier = list(kwargs).pop()
+            modifier_dict = kwargs[modifier]
+        else:
+            raise ValueError("Only use one keyword argument at a time, eg~ transact or call")
+        contract_modifier_func = getattr(self.__contract, modifier)
+        return getattr(contract_modifier_func(modifier_dict), self.__function)
 
     def __tobytes(self, candidate):
         if isinstance(candidate, str):
             if not candidate.startswith('0x'):
-                raise TypeError("Cannot call %s with %r as str, convert to bytes or hex first" % (
+                raise TypeError("Cannot call %s with %r, convert to bytes or hex string first" % (
                     (self.__prepared_function, candidate)))
             return Web3.toAscii(candidate)
         return candidate
