@@ -81,7 +81,7 @@ class TransactionMonitor(object):
             return
         if self.last_block_num and block['number'] > self.last_block_num + 1:
             print('WARNING: skipped blocks from %d to %d' % (self.last_block_num, block['number']),
-                    file=sys.stderr)
+                  file=sys.stderr)
         for watcher in self.block_watchers:
             watcher(block)
         self._recover_phantom_txs()
