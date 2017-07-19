@@ -1,8 +1,8 @@
 
+from toolz import compose
 from web3 import Web3
 
 from web3utils.hex import is_empty_hex
-from web3utils.utils import WrapCallable
 
 
 class EthContractSugar:
@@ -12,12 +12,9 @@ class EthContractSugar:
 
     def __call__(self, *args, **kwargs):
         contract = self.contract(*args, **kwargs)
-        if isinstance(contract, WrapCallable) or isinstance(contract, ContractSugar):
-            # contract already wrapped
-            return contract
-        elif type(contract) == type:
+        if type(contract) == type:
             # contract still needs to be initialized, wrap afterwards
-            return WrapCallable(contract, ContractSugar)
+            return compose(ContractSugar, contract)
         else:
             return ContractSugar(contract)
 
