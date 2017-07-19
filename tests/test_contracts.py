@@ -43,21 +43,3 @@ def test_contract_returns_none():
     sweet_method = ContractMethod(contract, 'grail')
     contract.call().grail.return_value = '0x0000'
     assert sweet_method() is None
-
-def test_contract_equality():
-    contracta = ContractSugar(Mock(address='0x1234'))
-    contractb = ContractSugar(Mock(address='0x1234'))
-    assert contracta == contractb
-
-def test_contract_equality_no_address(untouchable):
-    contracta = ContractSugar(Mock(address='0x1234'))
-    contractb = ContractSugar(untouchable)
-    contractc = ContractSugar(untouchable)
-    assert not hasattr(untouchable, 'address')
-    assert contracta != contractb
-    assert contractb != contractc
-
-def test_contract_inequality():
-    contracta = ContractSugar(Mock(address='0x1234'))
-    contractb = ContractSugar(Mock(address='0x4321'))
-    assert contracta != contractb

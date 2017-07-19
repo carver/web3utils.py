@@ -27,7 +27,6 @@ class ContractSugar:
      * auto-convert hex strings to bytes
      * quicker method calls like `contract.owner()` instead of `contract.call().owner()`
      * Instead of returning `"0x000..."` on empty results, return `None`
-     * contract equality is based on the address
 
     Often, one Ethereum contract will output a hex string, which you want to use as an input to
     another contract, but these need to be formatted as bytes. This class will automatically format
@@ -63,15 +62,6 @@ class ContractSugar:
 
     def __getattr__(self, attr):
         return ContractMethod(self.__contract, attr)
-
-    def __eq__(self, other):
-        if not isinstance(other, ContractSugar):
-            return False
-        if not hasattr(self.__contract, 'address'):
-            return False
-        if not hasattr(other.__contract, 'address'):
-            return False
-        return self.__contract.address == other.__contract.address
 
 
 class ContractMethod:
