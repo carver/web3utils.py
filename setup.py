@@ -16,7 +16,7 @@ with open(path.join(here, 'README.md'), encoding='utf-8') as f:
     long_description = f.read()
 
 setup(
-    name='web3utils.py',
+    name='web3utils',
 
     # Versions should comply with PEP440.  For a discussion on single-sourcing
     # the version across setup.py and the project code, see
@@ -40,7 +40,11 @@ setup(
     classifiers=[
         'Development Status :: 3 - Alpha',
         'Intended Audience :: Developers',
+        'Topic :: Database :: Front-Ends',
         'Topic :: Software Development :: Libraries',
+        'Topic :: Security :: Cryptography',
+        'Topic :: System :: Distributed Computing',
+        'Topic :: Utilities',
         'License :: OSI Approved :: MIT License',
         'Programming Language :: Python :: 3',
         'Programming Language :: Python :: 3.5',
