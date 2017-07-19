@@ -1,7 +1,7 @@
 
 import os
 
-from psutil import net_connections
+import psutil
 
 from web3 import Web3, IPCProvider, KeepAliveRPCProvider
 from web3.providers import ipc
@@ -34,7 +34,7 @@ class DefaultedWeb3:
     def __guess_provider_type(self):
         if os.path.exists(ipc.get_default_ipc_path()):
             return IPCProvider
-        elif any(len(conn.laddr) > 1 and conn.laddr[1] == RPC_PORT for conn in net_connections()):
+        elif self.__found_rpc():
             return KeepAliveRPCProvider
         return None
 
@@ -44,6 +44,10 @@ class DefaultedWeb3:
             raise Web3ConfigException(
                     "Could not auto-detect provider, set with web3.setProvider() first")
         return getattr(self.__proxyto, attr)
+
+    def __found_rpc(self):
+        conns = psutil.net_connections()
+        return any(len(conn.laddr) > 1 and conn.laddr[1] == RPC_PORT for conn in conns)
 
 
 def sweeten_contracts(web3):
