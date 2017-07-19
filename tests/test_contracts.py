@@ -2,7 +2,7 @@
 import pytest
 from unittest.mock import Mock
 
-from web3utils.contracts import ContractSugar, ContractMethod
+from web3utils.contracts import ContractSugar, ContractMethod, EthContractSugar
 
 def test_autoconvert_hex_to_bytes():
     contract = Mock()
@@ -43,3 +43,17 @@ def test_contract_returns_none():
     sweet_method = ContractMethod(contract, 'grail')
     contract.call().grail.return_value = '0x0000'
     assert sweet_method() is None
+
+def test_eth_contract_passthrough():
+    contract = Mock()
+    onelump = EthContractSugar(contract)
+    assert onelump.contract == contract
+    twolumps = EthContractSugar(onelump)
+    assert twolumps.contract == contract
+
+def test_contract_sugar_passthrough():
+    contract = Mock()
+    onelump = ContractSugar(contract)
+    assert onelump._web3py_contract == contract
+    twolumps = ContractSugar(onelump)
+    assert twolumps._web3py_contract == contract

@@ -8,7 +8,10 @@ from web3utils.hex import is_empty_hex
 class EthContractSugar:
 
     def __init__(self, original_contract):
-        self.contract = original_contract
+        if isinstance(original_contract, EthContractSugar):
+            self.contract = original_contract.contract
+        else:
+            self.contract = original_contract
 
     def __call__(self, *args, **kwargs):
         contract = self.contract(*args, **kwargs)
@@ -56,12 +59,12 @@ class ContractSugar:
 
     def __init__(self, contract):
         if isinstance(contract, ContractSugar):
-            self.__contract == contract.__contract
+            self._web3py_contract = contract._web3py_contract
         else:
-            self.__contract = contract
+            self._web3py_contract = contract
 
     def __getattr__(self, attr):
-        return ContractMethod(self.__contract, attr)
+        return ContractMethod(self._web3py_contract, attr)
 
 
 class ContractMethod:
