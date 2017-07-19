@@ -91,11 +91,9 @@ class ContractMethod:
 
     def __prepared_function(self, **kwargs):
         if not kwargs:
-            modifier = 'call'
-            modifier_dict = {}
+            modifier, modifier_dict = 'call', {}
         elif len(kwargs) == 1:
-            modifier = list(kwargs).pop()
-            modifier_dict = kwargs[modifier]
+            modifier, modifier_dict = kwargs.popitem()
         else:
             raise ValueError("Only use one keyword argument at a time, eg~ transact or call")
         contract_modifier_func = getattr(self.__contract, modifier)

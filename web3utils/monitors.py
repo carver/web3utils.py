@@ -125,5 +125,6 @@ class TransactionMonitor(object):
         for txid in phantom_copy:
             self.phantom_txids.remove(txid)
             tx = eth.getTransaction(txid)
-            if tx and tx['blockNumber'] > self.solid_height:
-                self._new_pending_tx(txid)
+            if tx:
+                if tx.blockNumber is None or tx.blockNumber > self.solid_height:
+                    self._new_pending_tx(txid)
