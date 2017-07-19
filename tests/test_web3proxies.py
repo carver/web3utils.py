@@ -7,8 +7,6 @@ from web3 import IPCProvider, KeepAliveRPCProvider
 from web3utils import ProxyEth, DefaultedWeb3
 from web3utils.web3proxies import RPC_PORT, Web3ConfigException
 
-from tests.utilities import untouchable
-
 
 def test_ethproxy_passthrough():
     web3 = Mock()
@@ -16,7 +14,7 @@ def test_ethproxy_passthrough():
     eth.getBlock('latest')
     web3.eth.getBlock.assert_called_once_with('latest')
 
-def test_ethproxy_laziness():
+def test_ethproxy_laziness(untouchable):
     # ProxyEth should not touch web3 during initialization (to avoid making calls to a bad provider)
     eth = ProxyEth(untouchable)
 
