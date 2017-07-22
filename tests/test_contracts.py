@@ -4,25 +4,34 @@ from unittest.mock import Mock
 
 from web3utils.contracts import ContractSugar, ContractMethod, EthContractSugar
 
-def test_autoconvert_hex_to_bytes():
+def test_encode_arguments_as_utf8():
+    contract = Mock()
+    sweet_method = ContractMethod(contract, 'grail')
+    sweet_method('Ö')
+    contract.call.assert_called_once_with({})
+    contract.call().grail.assert_called_once_with(b'O\xcc\x88')
+
+def test_hex_is_nothing_special():
     contract = Mock()
     sweet_method = ContractMethod(contract, 'grail')
     sweet_method('0x636172766572')
     contract.call.assert_called_once_with({})
-    contract.call().grail.assert_called_once_with(b'carver')
+    contract.call().grail.assert_called_once_with(b'0x636172766572')
 
-def test_autoconvert_hex_to_bytes():
+def test_bytes_passthrough():
     contract = Mock()
     sweet_method = ContractMethod(contract, 'grail')
     sweet_method(b'carver')
     contract.call.assert_called_once_with({})
     contract.call().grail.assert_called_once_with(b'carver')
 
-def test_cannot_convert_nonhex_string():
+def test_bytes_passthrough():
+    encoded = bytes('Ö', encoding='utf-8')
     contract = Mock()
     sweet_method = ContractMethod(contract, 'grail')
-    with pytest.raises(TypeError):
-        sweet_method('636172766572')
+    sweet_method(encoded)
+    contract.call.assert_called_once_with({})
+    contract.call().grail.assert_called_once_with(encoded)
 
 def test_contract_call_default():
     contract = Mock()

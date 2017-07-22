@@ -1,8 +1,11 @@
 
 from toolz import compose
-from web3 import Web3
 
 from web3utils.hex import is_empty_hex
+
+
+# default is utf-8: https://github.com/ethereum/wiki/wiki/Ethereum-Contract-ABI#argument-encoding
+CONTRACT_ENCODING = 'utf-8'
 
 
 class EthContractSugar:
@@ -26,22 +29,16 @@ class ContractSugar:
     """
     Call Ethereum contracts more succinctly
 
-    A few important changes:
-     * auto-convert hex strings to bytes
+    Several important changes:
      * quicker method calls like `contract.owner()` instead of `contract.call().owner()`
-     * Instead of returning `"0x000..."` on empty results, return `None`
-
-    Often, one Ethereum contract will output a hex string, which you want to use as an input to
-    another contract, but these need to be formatted as bytes. This class will automatically format
-    hex strings into bytes for you. If you already have arguments in the form of bytes, just confirm
-    that it is type `bytes` instead of type `string`. This is one reason that web3utils only
-    supports Python 3.
+     * encode all method argument strings as utf-8
+     * instead of returning `"0x000..."` on empty results, return `None`
 
     Short contract calls will be assumed to be read-only (equivalent to .call() in web3.py),
     unless it is modified first.
 
     Note that this will *not* prevent you from calling a method that tries to alter state.
-    That state change will just never be sent to the rest of the network.
+    That state change will just never be sent to the rest of the network as a transaction.
 
     You can modify a call like so:
 
@@ -94,8 +91,9 @@ class ContractMethod:
 
     def __tobytes(self, candidate):
         if isinstance(candidate, str):
-            if not candidate.startswith('0x'):
-                raise TypeError("Cannot call %s with %r, convert to bytes or hex string first" % (
-                    (self.__prepared_function, candidate)))
-            return Web3.toAscii(candidate)
+            try:
+                candidate = bytes(candidate, encoding=CONTRACT_ENCODING)
+            except UnicodeEncodeError as unicode_exc:
+                raise TypeError("Cannot call %s with %r. Convert to bytes or a %s string first" % (
+                    (self.__prepared_function, candidate, CONTRACT_ENCODING))) from unicode_exc
         return candidate
