@@ -62,5 +62,5 @@ setup(
     py_modules=["web3utils"],
 
     # https://packaging.python.org/en/latest/requirements.html
-    install_requires=['psutil>5,<6'],
+    install_requires=['psutil>5,<6', 'web3==3.10.0'],
 )
