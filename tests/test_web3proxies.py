@@ -34,12 +34,14 @@ def test_web3_set_provider_manually(monkeypatch):
     monkeypatch.setattr('os.path.exists', lambda path: False)
     monkeypatch.setattr('psutil.net_connections', lambda: [])
     provider = Mock()
-    provider.make_request.return_value = {'result': '0xBEEF'}
+    provider.make_request.return_value = {'result': '0xbeef'}
     web3 = DefaultedWeb3()
     web3.setProvider(provider)
     assert web3._requestManager.provider == provider
     # shouldn't raise exception:
-    assert web3.sha3('') == '0xBEEF'
+    sha = web3.sha3('')
+    # using the new provider:
+    assert web3.toHex(sha) == '0xbeef'
 
 def test_web3_providers_missing(monkeypatch):
     '''
@@ -51,3 +53,14 @@ def test_web3_providers_missing(monkeypatch):
     web3 = DefaultedWeb3()
     with pytest.raises(Web3ConfigException):
         web3.sha3('0xDEAD')
+
+def test_sha3_bytes(monkeypatch):
+    monkeypatch.setattr('os.path.exists', lambda path: True)
+    web3 = DefaultedWeb3()
+    sha = web3.sha3(b'eth', encoding='bytes')
+    assert type(sha) == bytes
+    assert web3.toHex(sha) == '0x4f5b812789fc606be1b3b16908db13fc7a9adf7ca72641f84d75b47069d3d7f0'
+
+def test_sha3_argument_detection(mockweb3):
+    mockweb3.sha3(b'parrot')
+    mockweb3._proxyto.sha3.assert_called_once_with(b'parrot', encoding='bytes')

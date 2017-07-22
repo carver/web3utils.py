@@ -1,4 +1,5 @@
 
+import codecs
 import os
 
 import psutil
@@ -20,16 +21,16 @@ class DefaultedWeb3:
     instead of `web3.eth.contract(abi=...)`
     '''
     def __init__(self):
-        self.__proxyto = None
+        self._proxyto = None
         provider_type = self.__guess_provider_type()
         if provider_type:
             self.setProvider(provider_type())
 
     def setProvider(self, provider):
-        if self.__proxyto:
-            self.__proxyto.setProvider(provider)
+        if self._proxyto:
+            self._proxyto.setProvider(provider)
         else:
-            self.__proxyto = Web3(provider)
+            self._proxyto = Web3(provider)
 
     def __guess_provider_type(self):
         if os.path.exists(ipc.get_default_ipc_path()):
@@ -40,14 +41,27 @@ class DefaultedWeb3:
 
     def __getattr__(self, attr):
         'all other attributes should be proxied through to the real web3'
-        if not self.__proxyto:
-            raise Web3ConfigException(
-                    "Could not auto-detect provider, set with web3.setProvider() first")
-        return getattr(self.__proxyto, attr)
+        self.__assert_proxy()
+        return getattr(self._proxyto, attr)
 
     def __found_rpc(self):
         conns = psutil.net_connections()
         return any(len(conn.laddr) > 1 and conn.laddr[1] == RPC_PORT for conn in conns)
+
+    def __assert_proxy(self):
+        if not self._proxyto:
+            raise Web3ConfigException(
+                    "Could not auto-detect provider, set with web3.setProvider() first")
+
+    def sha3(self, value, **kwargs):
+        self.__assert_proxy()
+        if isinstance(value, (bytes, bytearray)) and 'encoding' not in kwargs:
+            kwargs['encoding'] = 'bytes'
+        sha_hex = self._proxyto.sha3(value, **kwargs)
+        if isinstance(sha_hex, str):
+            return codecs.decode(sha_hex[2:], 'hex')
+        else:
+            return sha_hex
 
 
 def sweeten_contracts(web3):
