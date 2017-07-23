@@ -1,7 +1,7 @@
 
 # web3utils.py - Some sugar on top of web3.py
 
-web3utils is a thin layer over [web3.py](https://github.com/pipermerriam/web3.py) --
+web3utils is a thin layer over [web3.py](https://github.com/pipermerriam/web3.py)
 with these features:
 
 * immediate access to a `web3` and `eth` object, if you have a standard setup
@@ -45,6 +45,20 @@ balance = web3.fromWei(wei, 'ether')
 
 print(balance)
 ```
+
+Compare this to web3.py:
+```
+from web3 import Web3, IPCProvider
+
+web3 = Web3(IPCProvider())
+
+wei = web3.eth.getBalance(web3.eth.accounts[0])
+balance = web3.fromWei(wei, 'ether')
+
+print(balance)
+```
+
+It's a small imporvement, but nice at the command line.
 
 #### Succinct contract access
 
