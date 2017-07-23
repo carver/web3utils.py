@@ -88,13 +88,13 @@ Traceback (most recent call last):
     self.run()
   File "/usr/lib/python2.7/threading.py", line 754, in run
     self.__target(*self.__args, **self.__kwargs)
-  File "/home/jcarver/code/ens-register/venv/local/lib/python2.7/site-packages/web3/utils/filters.py", line 84, in _run
+  File "/home/carver/filter_listener/venv/local/lib/python2.7/site-packages/web3/utils/filters.py", line 84, in _run
     changes = self.web3.eth.getFilterChanges(self.filter_id)
-  File "/home/jcarver/code/ens-register/venv/local/lib/python2.7/site-packages/web3/utils/functional.py", line 14, in inner
+  File "/home/carver/filter_listener/venv/local/lib/python2.7/site-packages/web3/utils/functional.py", line 14, in inner
     value = fn(*args, **kwargs)
-  File "/home/jcarver/code/ens-register/venv/local/lib/python2.7/site-packages/web3/eth.py", line 312, in getFilterChanges
+  File "/home/carver/filter_listener/venv/local/lib/python2.7/site-packages/web3/eth.py", line 312, in getFilterChanges
     "eth_getFilterChanges", [filter_id],
-  File "/home/jcarver/code/ens-register/venv/local/lib/python2.7/site-packages/web3/providers/manager.py", line 35, in request_blocking
+  File "/home/carver/filter_listener/venv/local/lib/python2.7/site-packages/web3/providers/manager.py", line 35, in request_blocking
     raise ValueError(response["error"])
 ValueError: {u'message': u'filter not found', u'code': -32000}
 ```
