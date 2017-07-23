@@ -5,7 +5,7 @@ https://packaging.python.org/en/latest/distributing.html
 https://github.com/pypa/sampleproject
 """
 
-from setuptools import setup
+from setuptools import setup, find_packages
 from io import open
 from os import path
 
@@ -21,7 +21,7 @@ setup(
     # Versions should comply with PEP440.  For a discussion on single-sourcing
     # the version across setup.py and the project code, see
     # https://packaging.python.org/en/latest/single_source_version.html
-    version='0.0.1alpha',
+    version='0.0.1.dev0',
 
     description='Convenience tools for web3.py',
     long_description=long_description,
@@ -53,13 +53,11 @@ setup(
     # What does your project relate to?
     keywords='ethereum eth web3 web3.py development library',
 
+    python_requires='>=3.5',
+
     # You can just specify the packages manually here if your project is
     # simple. Or you can use find_packages().
-    # packages=find_packages(exclude=['contrib', 'docs', 'tests']),
-
-    # Alternatively, if you want to distribute just a my_module.py, uncomment
-    # this:
-    py_modules=["web3utils"],
+    packages=find_packages(exclude=['tests', 'venv']),
 
     # https://packaging.python.org/en/latest/requirements.html
     install_requires=['psutil>5,<6', 'web3==3.10.0'],

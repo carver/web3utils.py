@@ -3,3 +3,5 @@ venv
 *.swp
 .cache
 *.egg-info
+build
+dist
