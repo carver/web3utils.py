@@ -7,7 +7,7 @@ these are the main features:
 * immediate access to a `web3` and `eth` object if you have a standard setup
 * shorter way to call contract functions
 * encode all contract string arguments as utf-8
-* autoset encoding of `web3.sha3(value)`, if `type(value) == bytes`
+* autoset encoding of input value to `web3.sha3(value)`, if `type(value) == bytes`
 * return `None` from a contract call, in place of '0x0000000...'
 
 This handful of changes made for quicker shell usage and coding for me. I hope it does for you, too!
@@ -20,7 +20,8 @@ past.
 
 ### Setup
 
-`pip install web3utils`
+To use in your code, simply: `pip install web3utils`
+
 
 If you want to contribute:
 
@@ -34,6 +35,8 @@ pip install -e .
 
 ### Usage
 
+#### Instant access to web3 and eth
+
 Print your primary account balance, denominated in ether:
 
 ```
@@ -45,20 +48,30 @@ balance = web3.fromWei(wei, 'ether')
 print(balance)
 ```
 
-Confirm the owner of the '.eth' domain in the Ethereum Name Service
+#### Succinct contract access
+
+Several important changes:
+ * quicker method calls like `contract.owner()` instead of `contract.call().owner()`
+ * encode all method argument strings as utf-8
+ * instead of returning `"0x000..."` on empty results, return `None`
+
+Short contract calls will be assumed to be read-only (equivalent to `.call()` in web3.py),
+unless it is modified first.
+
+Note that this will *not* prevent you from calling a method that tries to alter state.
+That state change will just never be sent to the rest of the network as a transaction.
+
+You can switch back to a transaction like so:
 
 ```
-import codecs
+contract.withdraw(amount, transact={'from': eth.accounts[1], 'gas': 100000, ...})
+```
 
-ENS_ABI = { ... <define abi> ... }
-ENS_ADDR = '0x314159265dd8dbb310642f98f50c066173c1259b'
+Which is equivalent to this web3.py approach:
 
-ens = eth.contract(abi=ENS_ABI, address=ENS_ADDR)
 
-AUCTION_REGISTRAR_NODE = codecs.decode('93cdeb708b7545dc668eb9280176169d1c33cfd8ed6f04690a0bcc88a93fc4ae', 'hex')
-
-assert ens.owner(AUCTION_REGISTRAR_NODE) == '0x6090a6e47849629b7245dfa1ca21d94cd15878ef'
-
+```
+contract.transact({'from': eth.accounts[1], 'gas': 100000, ...}).withdraw(amount)
 ```
 
 ### Wishlist

@@ -26,34 +26,6 @@ class EthContractSugar:
 
 
 class ContractSugar:
-    """
-    Call Ethereum contracts more succinctly
-
-    Several important changes:
-     * quicker method calls like `contract.owner()` instead of `contract.call().owner()`
-     * encode all method argument strings as utf-8
-     * instead of returning `"0x000..."` on empty results, return `None`
-
-    Short contract calls will be assumed to be read-only (equivalent to .call() in web3.py),
-    unless it is modified first.
-
-    Note that this will *not* prevent you from calling a method that tries to alter state.
-    That state change will just never be sent to the rest of the network as a transaction.
-
-    You can modify a call like so:
-
-    ```
-    contract.withdraw(amount, transact={'from': eth.accounts[1], 'gas': 100000, ...})
-    ```
-
-    Which is equivalent to this web3.py approach:
-
-
-    ```
-    contract.transact({'from': eth.accounts[1], 'gas': 100000, ...}).withdraw(amount)
-    ```
-    """
-
     def __init__(self, contract):
         if isinstance(contract, ContractSugar):
             self._web3py_contract = contract._web3py_contract
