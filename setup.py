@@ -60,5 +60,5 @@ setup(
     packages=find_packages(exclude=['tests', 'venv']),
 
     # https://packaging.python.org/en/latest/requirements.html
-    install_requires=['psutil>5,<6', 'web3==3.10.0'],
+    install_requires=['psutil>5,<6', 'toolz<1', 'web3==3.10.0'],
 )
