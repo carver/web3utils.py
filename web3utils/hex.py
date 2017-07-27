@@ -3,6 +3,7 @@ import codecs
 
 from web3 import Web3
 
+
 def emptybytes(digits=64):
     non_prefixed = emptyhex(digits)[2:]
     return codecs.decode(non_prefixed, 'hex')
