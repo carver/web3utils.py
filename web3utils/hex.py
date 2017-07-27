@@ -1,6 +1,7 @@
 
 import codecs
 
+from web3 import Web3
 
 def emptybytes(digits=64):
     non_prefixed = emptyhex(digits)[2:]
@@ -17,6 +18,12 @@ def is_empty_hex(value):
     if not value.startswith('0x'):
         return False
     return value == emptyhex(len(value) - 2)
+
+
+def hex2bytes(hex_str):
+    # idempotent call, can't hurt to retry:
+    hex_str = Web3.toHex(hex_str)
+    return Web3.toAscii(hex_str)
 
 
 EMPTY_ADDR = emptyhex(40)
