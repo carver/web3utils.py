@@ -64,7 +64,7 @@ class ContractMethod:
     def __tobytes(self, candidate):
         if isinstance(candidate, str):
             try:
-                candidate = bytes(candidate, encoding=CONTRACT_ENCODING)
+                candidate = candidate.encode(CONTRACT_ENCODING)
             except UnicodeEncodeError as unicode_exc:
                 raise TypeError("Cannot call %s with %r. Convert to bytes or a %s string first" % (
                     (self.__prepared_function, candidate, CONTRACT_ENCODING))) from unicode_exc
