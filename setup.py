@@ -21,7 +21,7 @@ setup(
     # Versions should comply with PEP440.  For a discussion on single-sourcing
     # the version across setup.py and the project code, see
     # https://packaging.python.org/en/latest/single_source_version.html
-    version='0.0.3',
+    version='0.0.4',
 
     description='Convenience tools for web3.py',
     long_description=long_description,
@@ -60,5 +60,5 @@ setup(
     packages=find_packages(exclude=['tests', 'venv']),
 
     # https://packaging.python.org/en/latest/requirements.html
-    install_requires=['psutil>5,<6', 'toolz<1', 'web3==3.11.0'],
+    install_requires=['psutil>5,<6', 'toolz<1', 'web3==3.11.1'],
 )
