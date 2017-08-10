@@ -22,8 +22,8 @@ def is_empty_hex(value):
 
 
 def hex2bytes(hex_str):
-    # idempotent call, can't hurt to retry:
-    hex_str = Web3.toHex(hex_str)
+    if isinstance(hex_str, (bytes, bytearray)):
+        return hex_str
     return Web3.toAscii(hex_str)
 
 
