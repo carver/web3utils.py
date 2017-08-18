@@ -2,14 +2,10 @@
 import codecs
 import os
 
-import psutil
-
-from web3 import Web3, IPCProvider, KeepAliveRPCProvider
+from web3 import Web3, IPCProvider, HTTPProvider
 from web3.providers import ipc
 
 from web3utils.contracts import EthContractSugar
-
-RPC_PORT = 8545
 
 
 class DefaultedWeb3:
@@ -20,36 +16,27 @@ class DefaultedWeb3:
     web3.py-style contracts, use `web3.eth.original_contract(abi=...)`
     instead of `web3.eth.contract(abi=...)`
     '''
+
+    _DEFAULT_PROVIDERS = [IPCProvider(), HTTPProvider('http://127.0.0.1:8545/')]
+
     def __init__(self):
-        self._proxyto = None
-        provider_type = self.__guess_provider_type()
-        if provider_type:
-            self.setProvider(provider_type())
+        self._proxyto = Web3(None)
+        provider = self._first_connection(self._DEFAULT_PROVIDERS)
+        self.setProvider(provider)
 
-    def setProvider(self, provider):
-        if self._proxyto:
-            self._proxyto.setProvider(provider)
-        else:
-            self._proxyto = Web3(provider)
-
-    def __guess_provider_type(self):
-        if os.path.exists(ipc.get_default_ipc_path()):
-            return IPCProvider
-        elif self.__found_rpc():
-            return KeepAliveRPCProvider
-        return None
+    def _first_connection(self, providers):
+        for provider in providers:
+            if provider.isConnected():
+                return provider
 
     def __getattr__(self, attr):
         'all other attributes should be proxied through to the real web3'
-        self.__assert_proxy()
+        if attr != 'setProvider':
+            self.__assert_proxy()
         return getattr(self._proxyto, attr)
 
-    def __found_rpc(self):
-        conns = psutil.net_connections()
-        return any(len(conn.laddr) > 1 and conn.laddr[1] == RPC_PORT for conn in conns)
-
     def __assert_proxy(self):
-        if not self._proxyto:
+        if not self._proxyto.currentProvider:
             raise Web3ConfigException(
                     "Could not auto-detect provider, set with web3.setProvider() first")
 
