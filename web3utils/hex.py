@@ -22,9 +22,9 @@ def is_empty_hex(value):
 
 
 def hex2bytes(hex_str):
-    if isinstance(hex_str, (bytes, bytearray)):
-        return hex_str
-    return Web3.toAscii(hex_str)
+    if isinstance(hex_str, str):
+        return Web3.toAscii(hex_str)
+    return hex_str
 
 
 EMPTY_ADDR = emptyhex(40)
