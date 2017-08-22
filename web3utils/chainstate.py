@@ -3,6 +3,10 @@ import datetime
 import time
 
 
+def isfresh(block, allowable_delay):
+    return block and time.time() - block.timestamp <= allowable_delay
+
+
 def stalecheck(web3, **kwargs):
     '''
     Use to require that a function will run only of the blockchain is recently updated.
@@ -21,7 +25,7 @@ def stalecheck(web3, **kwargs):
         def wrapper(*args, assertfresh=True, **kwargs):
             if assertfresh:
                 last_block = web3.eth.getBlock('latest')
-                if not last_block or time.time() - last_block.timestamp > allowable_delay:
+                if not isfresh(last_block, allowable_delay):
                     raise StaleBlockchain(last_block, allowable_delay)
             return func(*args, **kwargs)
         return wrapper
