@@ -1,7 +1,7 @@
 
 from toolz import compose
 
-from web3utils.hex import is_empty_hex
+from web3utils.encodings import is_empty_hex
 
 
 # default is utf-8: https://github.com/ethereum/wiki/wiki/Ethereum-Contract-ABI#argument-encoding
