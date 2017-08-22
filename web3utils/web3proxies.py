@@ -1,9 +1,7 @@
 
 import codecs
-import os
 
 from web3 import Web3, IPCProvider, HTTPProvider
-from web3.providers import ipc
 
 from web3utils.contracts import EthContractSugar
 
